@@ -4,43 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Illuminate\View\View;
 
 class CartController extends Controller
 {
-    public function index(Request $request): View
+    public function contents(Request $request): JsonResponse
     {
-        $cart = $request->session()->get('cart', []);
-        $products = Product::query()
-            ->whereIn('id', array_keys($cart))
-            ->get()
-            ->keyBy('id');
-
-        $items = collect($cart)
-            ->map(function (int $quantity, int|string $id) use ($products) {
-                $product = $products->get($id);
-
-                return $product ? [
-                    'product' => $product,
-                    'quantity' => $quantity,
-                    'subtotal' => $product->price * $quantity,
-                ] : null;
-            })
-            ->filter()
-            ->values();
-
-        return view('shop.cart', [
-            'items' => $items,
-            'total' => $items->sum('subtotal'),
-        ]);
+        return response()->json($this->cartPayload($request));
     }
 
-    public function store(Request $request, Product $product): RedirectResponse
+    public function index(): RedirectResponse
+    {
+        return redirect()->to(route('home').'#cart');
+    }
+
+    public function store(Request $request, Product $product): JsonResponse|RedirectResponse
     {
         $data = $request->validate([
             'quantity' => ['nullable', 'integer', 'min:1', 'max:99'],
@@ -50,7 +33,7 @@ class CartController extends Controller
             'quantity.max' => 'Jumlah maksimal 99.',
         ]);
 
-        if (! $product->is_active || $product->stock < 1) {
+        if (! $this->isAvailable($product) || $product->stock < 1) {
             return back()->withErrors(['cart' => 'Produk sedang habis atau tidak tersedia.']);
         }
 
@@ -64,10 +47,14 @@ class CartController extends Controller
         $cart[$product->id] = $quantity;
         $request->session()->put('cart', $cart);
 
-        return redirect()->route('cart.index')->with('success', 'Produk ditambahkan ke keranjang.');
+        if ($request->expectsJson()) {
+            return response()->json($this->cartPayload($request));
+        }
+
+        return redirect()->to(route('home').'#cart')->with('success', 'Produk ditambahkan ke keranjang.');
     }
 
-    public function update(Request $request, Product $product): RedirectResponse
+    public function update(Request $request, Product $product): JsonResponse|RedirectResponse
     {
         $data = $request->validate([
             'quantity' => ['required', 'integer', 'min:1', 'max:99'],
@@ -78,7 +65,7 @@ class CartController extends Controller
             'quantity.max' => 'Jumlah maksimal 99.',
         ]);
 
-        if (! $product->is_active || $data['quantity'] > $product->stock) {
+        if (! $this->isAvailable($product) || $data['quantity'] > $product->stock) {
             return back()->withErrors(['cart' => 'Jumlah melebihi stok produk yang tersedia.']);
         }
 
@@ -88,14 +75,22 @@ class CartController extends Controller
             $request->session()->put('cart', $cart);
         }
 
+        if ($request->expectsJson()) {
+            return response()->json($this->cartPayload($request));
+        }
+
         return back()->with('success', 'Jumlah produk diperbarui.');
     }
 
-    public function destroy(Request $request, Product $product): RedirectResponse
+    public function destroy(Request $request, Product $product): JsonResponse|RedirectResponse
     {
         $cart = $request->session()->get('cart', []);
         unset($cart[$product->id]);
         $request->session()->put('cart', $cart);
+
+        if ($request->expectsJson()) {
+            return response()->json($this->cartPayload($request));
+        }
 
         return back()->with('success', 'Produk dihapus dari keranjang.');
     }
@@ -136,7 +131,7 @@ class CartController extends Controller
             $total = 0;
             foreach ($cart as $productId => $quantity) {
                 $product = $products->get($productId);
-                if (! $product->is_active || $quantity > $product->stock) {
+                if (! $this->isAvailable($product) || $quantity > $product->stock) {
                     throw ValidationException::withMessages([
                         'cart' => "Stok {$product->name} tidak mencukupi. Perbarui jumlah di keranjang.",
                     ]);
@@ -177,5 +172,34 @@ class CartController extends Controller
         $request->session()->forget('cart');
 
         return redirect()->route('orders.mine')->with('success', "Pesanan #{$order->id} berhasil dibuat.");
+    }
+
+    private function cartPayload(Request $request): array
+    {
+        $cart = $request->session()->get('cart', []);
+        $products = Product::query()
+            ->whereIn('id', array_keys($cart))
+            ->get()
+            ->keyBy('id');
+
+        $items = collect($cart)
+            ->map(function (int $quantity, int|string $id) use ($products): ?array {
+                $product = $products->get($id);
+
+                return $product ? [
+                    'slug' => $product->slug,
+                    'qty' => $quantity,
+                ] : null;
+            })
+            ->filter()
+            ->values()
+            ->all();
+
+        return ['items' => $items];
+    }
+
+    private function isAvailable(Product $product): bool
+    {
+        return (bool) ($product->getAttribute('is_active') ?? true);
     }
 }

@@ -25,7 +25,7 @@
         <nav class="nav">
             <a class="brand" href="{{ route('home') }}">tada<span>·</span> sweet sando</a>
             <div class="navlinks">
-                <a href="{{ route('home') }}">Menu</a>
+                <a href="{{ route('shop.index') }}">Menu</a>
                 <a href="{{ route('cart.index') }}">Keranjang ({{ array_sum(session('cart', [])) }})</a>
                 @auth
                     <a href="{{ route('orders.mine') }}">Pesanan saya</a>

@@ -22,11 +22,52 @@ class StoreFlowTest extends TestCase
             'stock' => 2,
         ]);
 
-        $this->get(route('home'))->assertOk()->assertSee('Peachy Cream');
-        $this->get(route('login'))->assertOk()->assertSee('Masuk ke Tada');
-        $this->get(route('register'))->assertOk()->assertSee('Buat akun Tada');
-        $this->post(route('cart.store', $product))->assertRedirect(route('cart.index'));
-        $this->get(route('cart.index'))->assertOk()->assertSee('Peachy Cream')->assertSee('Ringkasan pesanan');
+        $this->get(route('home'))->assertOk()->assertSee('JAPANESE-INSPIRED FRUIT SANDO');
+        $this->get(route('shop'))->assertOk()->assertSee('Peachy Cream');
+        $this->get(route('login'))->assertRedirect(route('home').'#login');
+        $this->get(route('register'))->assertRedirect(route('home').'#register');
+        $this->post(route('cart.store', $product))->assertRedirect(route('home').'#cart');
+        $this->get(route('cart.index'))->assertRedirect(route('home').'#cart');
+    }
+
+    public function test_original_storefront_routes_render_products_using_legacy_slugs(): void
+    {
+        Product::create([
+            'name' => 'Sando Strawberry',
+            'slug' => 'sando-strawberry',
+            'description' => 'Stroberi dan krim.',
+            'price' => 7000,
+            'stock' => 5,
+        ]);
+
+        $this->get(route('home'))->assertOk()->assertSee('JAPANESE-INSPIRED FRUIT SANDO')->assertSee('Sando Strawberry');
+        $this->get(route('shop'))->assertOk()->assertSee('Sando Strawberry');
+        $this->get(route('product', 'strawberry'))->assertOk()->assertSee('Strawberry')->assertSee('ingredients');
+    }
+
+    public function test_storefront_cart_json_endpoints_use_the_server_session(): void
+    {
+        $product = Product::create([
+            'name' => 'Grape Cream',
+            'slug' => 'grape-cream',
+            'description' => 'Krim dan anggur.',
+            'price' => 28000,
+            'stock' => 3,
+        ]);
+
+        $this->postJson(route('cart.store', $product), ['quantity' => 2])
+            ->assertOk()
+            ->assertJsonPath('items.0.slug', 'grape-cream')
+            ->assertJsonPath('items.0.qty', 2);
+
+        $this->getJson(route('cart.contents'))
+            ->assertOk()
+            ->assertJsonPath('items.0.slug', 'grape-cream')
+            ->assertJsonPath('items.0.qty', 2);
+
+        $this->patchJson(route('cart.update', $product), ['quantity' => 1])
+            ->assertOk()
+            ->assertJsonPath('items.0.qty', 1);
     }
 
     public function test_customer_can_register_log_in_and_log_out(): void
@@ -66,7 +107,7 @@ class StoreFlowTest extends TestCase
         $customer = User::factory()->create();
 
         $this->post(route('cart.store', $product), ['quantity' => 2])
-            ->assertRedirect(route('cart.index'));
+            ->assertRedirect(route('home').'#cart');
 
         $this->actingAs($customer)
             ->post(route('cart.checkout'), [

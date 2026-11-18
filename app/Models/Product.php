@@ -16,6 +16,20 @@ class Product extends Model
         'sold_quantity',
         'image_url',
         'is_active',
+        'short_name',
+        'tagline',
+        'image',
+        'color',
+        'accent_color',
+        'header_color',
+        'tasting_notes',
+        'ingredients',
+        'fruits',
+        'nutrition',
+        'calories',
+        'rating',
+        'detail_enabled',
+        'sort_order',
     ];
 
     protected function casts(): array
@@ -25,6 +39,12 @@ class Product extends Model
             'stock' => 'integer',
             'sold_quantity' => 'integer',
             'is_active' => 'boolean',
+            'ingredients' => 'array',
+            'fruits' => 'array',
+            'nutrition' => 'array',
+            'detail_enabled' => 'boolean',
+            'calories' => 'integer',
+            'rating' => 'integer',
         ];
     }
 

@@ -7,18 +7,17 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\View\View;
 
 class AuthController extends Controller
 {
-    public function showLogin(): View
+    public function showLogin(): RedirectResponse
     {
-        return view('auth.login');
+        return redirect()->to(route('home').'#login');
     }
 
-    public function showRegister(): View
+    public function showRegister(): RedirectResponse
     {
-        return view('auth.register');
+        return redirect()->to(route('home').'#register');
     }
 
     public function login(Request $request): RedirectResponse
