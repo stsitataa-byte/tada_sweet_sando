@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Product extends Model
+{
+    protected $guarded = [];
+
+    protected function casts(): array
+    {
+        return [
+            'detail_enabled' => 'boolean',
+            'fruits' => 'array',
+            'ingredients' => 'array',
+            'nutrition' => 'array',
+        ];
+    }
+}
