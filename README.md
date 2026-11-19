@@ -1,4 +1,23 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Tada Sweet Sando
+
+Aplikasi toko sandwich manis dengan katalog produk, keranjang belanja, akun pelanggan, checkout, dan dashboard admin.
+
+## Menjalankan aplikasi
+
+1. Salin `.env.example` menjadi `.env`, lalu isi konfigurasi database lokal.
+2. Jalankan `composer install`, `php artisan key:generate`, `php artisan migrate`, dan `php artisan db:seed`.
+3. Untuk membuat admin pertama, isi `STORE_ADMIN_EMAIL` dan `STORE_ADMIN_PASSWORD` pada `.env` sebelum menjalankan seeder. Akun pelanggan yang mendaftar tidak dapat mengakses dashboard admin.
+4. Jalankan server dengan `php artisan serve`, lalu buka alamat yang ditampilkan.
+
+Seeder menyediakan menu awal hanya jika katalog masih kosong; menu dan stok yang sudah ada tidak ditimpa. Pesanan yang checkout akan mengurangi stok. Pemasukan dashboard menghitung pesanan selesai dan transaksi pemasukan manual; pengeluaran berasal dari transaksi yang dicatat admin. Persentase terjual dihitung dari unit terjual dibanding unit terjual ditambah stok tersedia. Pesanan selesai atau dibatalkan merupakan status akhir.
+
+## Fitur
+
+- Pelanggan dapat mendaftar, masuk, mengelola keranjang, checkout, dan melihat status/keterangan pesanan.
+- Admin dapat memperbarui stok, mencatat pemasukan/pengeluaran, memantau persentase penjualan, serta mengubah status dan keterangan pesanan.
+- Admin dibuat hanya melalui konfigurasi lokal `STORE_ADMIN_EMAIL` dan `STORE_ADMIN_PASSWORD`; jangan gunakan kata sandi contoh atau membagikan `.env`.
+
+## Pengembangan Laravel
 
 <p align="center">
 <a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
