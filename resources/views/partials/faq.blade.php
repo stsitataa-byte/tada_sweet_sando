@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {{-- FAQ ACCORDION. Isi diubah di config/sando.php (bagian 'faq'). --}}
 <section class="faq" id="faq">
     <h2 class="display-title display-title--lilac">FAQs</h2>
@@ -17,16 +16,4 @@
             </div>
         @endforeach
     </div>
-=======
-<section class="faq" id="faq">
-  <h2 class="mega-s">QUESTIONS?</h2>
-  <div class="faq-l">
-    @foreach (config('sando.faq') as [$q, $a])
-    <div class="fq">
-      <button class="fq-q" type="button" aria-expanded="false"><span>{{ $q }}</span><i>+</i></button>
-      <div class="fq-a"><p>{{ $a }}</p></div>
-    </div>
-    @endforeach
-  </div>
->>>>>>> a0a87ebae7737a00bf320e48c90d969c5abd53be
 </section>
