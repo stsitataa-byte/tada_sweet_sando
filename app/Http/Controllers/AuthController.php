@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,20 +11,20 @@ class AuthController extends Controller
 {
     public function show()
     {
-        return view('auth');
+        return redirect()->to(route('home') . '#login');
     }
 
-    public function showLogin(): RedirectResponse
+    public function showLogin()
     {
-        return redirect()->to(route('home').'#login');
+        return redirect()->to(route('home') . '#login');
     }
 
-    public function showRegister(): RedirectResponse
+    public function showRegister()
     {
-        return redirect()->to(route('home').'#register');
+        return redirect()->to(route('home') . '#register');
     }
 
-    public function login(Request $request): RedirectResponse
+    public function login(Request $request)
     {
         $credentials = $request->validateWithBag('login', [
             'email' => ['required', 'email'],
@@ -36,14 +35,20 @@ class AuthController extends Controller
             'password.required' => 'Kata sandi wajib diisi.',
         ]);
 
-        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+        if (!Auth::attempt(
+            $credentials,
+            $request->boolean('remember')
+        )) {
             return back()
-                ->withErrors(['email' => 'Email atau kata sandi tidak cocok.'], 'login')
-                ->onlyInput('email');
+                ->withErrors([
+                    'email' => 'Email atau kata sandi tidak cocok.',
+                ], 'login')
+                ->withInput($request->only('email'));
         }
 
         $request->session()->regenerate();
 
+        // Periksa apakah pengguna merupakan admin
         if ($request->user()->is_admin) {
             return redirect()->intended(route('admin.dashboard'));
         }
@@ -51,46 +56,63 @@ class AuthController extends Controller
         return redirect()->intended(route('home'));
     }
 
-    public function register(Request $request): RedirectResponse
+    public function register(Request $request)
     {
         $data = $request->validateWithBag('register', [
-            'name' => ['sometimes', 'required', 'string', 'max:120'],
-            'first_name' => ['sometimes', 'required', 'string', 'max:60'],
+            'first_name' => ['required', 'string', 'max:60'],
             'last_name' => ['nullable', 'string', 'max:60'],
-            'email' => ['sometimes', 'required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'register_email' => ['sometimes', 'required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['sometimes', 'required', 'string', 'min:8', 'confirmed'],
-            'register_password' => ['sometimes', 'required', 'string', 'min:8', 'max:100'],
+            'register_email' => [
+                'required',
+                'email',
+                'max:255',
+                'unique:users,email'
+            ],
+            'register_password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:100'
+            ],
         ], [
-            'email.unique' => 'Email ini sudah terdaftar.',
+            'first_name.required' => 'Nama depan wajib diisi.',
+            'register_email.required' => 'Email wajib diisi.',
+            'register_email.email' => 'Masukkan alamat email yang valid.',
             'register_email.unique' => 'Email ini sudah terdaftar.',
-            'password.min' => 'Kata sandi minimal 8 karakter.',
+            'register_password.required' => 'Password wajib diisi.',
             'register_password.min' => 'Password minimal 8 karakter.',
-            'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
         ]);
 
-        $email = $data['email'] ?? $data['register_email'];
-        $password = $data['password'] ?? $data['register_password'];
-        $name = $data['name'] ?? trim(($data['first_name'] ?? '') . ' ' . ($data['last_name'] ?? ''));
+        $user = new User();
 
-        $user = User::create([
-            'name' => $name,
-            'email' => $email,
-            'password' => Hash::make($password),
-        ]);
+        $user->name = trim(
+            $data['first_name'] . ' ' . ($data['last_name'] ?? '')
+        );
 
+        $user->email = $data['register_email'];
+
+        $user->password = Hash::make(
+            $data['register_password']
+        );
+
+        $user->save();
+
+        // Login otomatis setelah berhasil mendaftar
         Auth::login($user);
+
         $request->session()->regenerate();
 
-        return redirect()->route('home')->with('success', 'Akun berhasil dibuat. Selamat berbelanja!');
+        return redirect()->route('home')
+            ->with('success', 'Akun berhasil dibuat. Selamat berbelanja!');
     }
 
-    public function logout(Request $request): RedirectResponse
+    public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('home')->with('success', 'Anda berhasil keluar.');
+        return redirect()->route('home')
+            ->with('success', 'Anda berhasil keluar.');
     }
 }
