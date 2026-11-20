@@ -3,30 +3,8 @@
 @section('title', 'TADA SWEETSANDO | Fresh Fruit Sando')
 
 @section('content')
-@php
-    $heroSrc = config('sando.images.hero') ?: ($catalog['mix-fruit']['image'] ?? null);
-    $hero = config('sando.hero');
-@endphp
-
-{{-- ============ HERO ============ --}}
-<section class="hero">
-    <div class="hero__text">
-        <p class="hero__kicker">{{ $hero['kicker'] }}</p>
-        <h1 class="display-title display-title--hero">{{ $hero['headline'] }}</h1>
-        <p class="hero__lead">{{ $hero['text'] }}</p>
-        <a class="btn btn--pink btn--big" href="{{ route('shop') }}">{{ $hero['button'] }} <svg width="18" height="18"><use href="#i-arrow"/></svg></a>
-    </div>
-
-    <div class="hero__visual">
-        <svg class="deco deco--1" width="70" height="70"><use href="#i-strawberry"/></svg>
-        <svg class="deco deco--2" width="64" height="64"><use href="#i-grape"/></svg>
-        <svg class="deco deco--3" width="64" height="64"><use href="#i-mango"/></svg>
-        <svg class="deco deco--4" width="48" height="48"><use href="#i-sparkle"/></svg>
-        <div class="hero__photo">
-            @include('partials.img', ['src' => $heroSrc, 'alt' => 'Fruit sando TADA SWEETSANDO', 'class' => 'hero__img'])
-        </div>
-    </div>
-</section>
+{{-- ============ HERO (berganti tema per varian) ============ --}}
+@include('partials.hero', ['catalog' => $catalog])
 
 {{-- ============ STORY (tab) ============ --}}
 <section class="story" id="story">

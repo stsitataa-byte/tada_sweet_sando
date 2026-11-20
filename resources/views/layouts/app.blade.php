@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Antonio:wght@300;400;700&family=Open+Sans:wght@400;600;700&family=Space+Mono:wght@400;700&family=Titan+One&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ @filemtime(public_path('css/app.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/fx.css') }}?v={{ @filemtime(public_path('css/fx.css')) }}">
 </head>
 <body class="@yield('body_class')">
 
@@ -42,6 +43,7 @@
     </script>
     <script src="{{ asset('js/app.js') }}?v={{ @filemtime(public_path('js/app.js')) }}"></script>
     <script src="{{ asset('js/game.js') }}?v={{ @filemtime(public_path('js/game.js')) }}"></script>
+    <script src="{{ asset('js/fx.js') }}?v={{ @filemtime(public_path('js/fx.js')) }}"></script>
     @stack('scripts')
 </body>
 </html>

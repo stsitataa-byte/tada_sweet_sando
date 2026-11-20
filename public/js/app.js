@@ -252,4 +252,142 @@
             });
         });
     }
+
+})();
+
+
+/* =========================================================
+   EFEK BAGIAN MISI: tilt 3D, glare, titik halftone, spotlight kartu
+   Hanya aktif untuk mouse, mati jika "reduce motion".
+   ========================================================= */
+(function () {
+    'use strict';
+
+    var root = document.querySelector('[data-fx-mission]');
+    if (!root) return;
+
+    var mq = function (q) { return window.matchMedia && window.matchMedia(q).matches; };
+    var reduce = mq('(prefers-reduced-motion: reduce)');
+    var fine = mq('(hover: hover) and (pointer: fine)');
+    var points = root.querySelectorAll('.mission__point');
+
+    /* 1. Kartu muncul bertahap saat di-scroll */
+    if (!reduce && 'IntersectionObserver' in window) {
+        root.classList.add('fx-ready');
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (en) {
+                if (en.isIntersecting) { en.target.classList.add('is-in'); io.unobserve(en.target); }
+            });
+        }, { threshold: 0.2 });
+        points.forEach(function (p) { io.observe(p); });
+    }
+
+    if (reduce || !fine) return;
+
+    /* 2. Cahaya yang mengikuti kursor di dalam kartu */
+    points.forEach(function (p) {
+        p.addEventListener('pointermove', function (e) {
+            var r = p.getBoundingClientRect();
+            p.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+            p.style.setProperty('--my', (e.clientY - r.top) + 'px');
+        });
+    });
+
+    var zone = root.querySelector('.mission__art');
+    var frame = root.querySelector('.mission__frame');
+    var cv = root.querySelector('.mission__dots');
+    if (!zone || !frame || !cv) return;
+
+    /* 3. Tilt 3D + glare */
+    var evt = null, tiltRaf = 0;
+
+    function tilt() {
+        tiltRaf = 0;
+        if (!evt) return;
+        var r = zone.getBoundingClientRect();
+        var x = (evt.clientX - r.left) / r.width;
+        var y = (evt.clientY - r.top) / r.height;
+        var cx = Math.max(-1, Math.min(1, (x - 0.5) * 2));
+        var cy = Math.max(-1, Math.min(1, (y - 0.5) * 2));
+        frame.style.setProperty('--ry', (cx * 12).toFixed(2) + 'deg');
+        frame.style.setProperty('--rx', (-cy * 10).toFixed(2) + 'deg');
+        frame.style.setProperty('--gx', (x * 100).toFixed(1) + '%');
+        frame.style.setProperty('--gy', (y * 100).toFixed(1) + '%');
+    }
+
+    /* 4. Medan titik halftone yang bereaksi pada kursor */
+    var ctx = cv.getContext('2d');
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = 0, h = 0, mx = -999, my = -999, tx = -999, ty = -999;
+    var strength = 0, active = false, dotRaf = 0;
+    var GAP = 26, RADIUS = 170;
+
+    function resize() {
+        var r = zone.getBoundingClientRect();
+        w = r.width; h = r.height;
+        cv.width = Math.round(w * dpr);
+        cv.height = Math.round(h * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        draw();
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, w, h);
+        for (var y = GAP / 2; y < h; y += GAP) {
+            for (var x = GAP / 2; x < w; x += GAP) {
+                var dx = x - mx, dy = y - my;
+                var d = Math.sqrt(dx * dx + dy * dy) || 1;
+                var k = Math.max(0, 1 - d / RADIUS);
+                k = k * k * (3 - 2 * k) * strength;
+                var px = x + (dx / d) * k * 7;
+                var py = y + (dy / d) * k * 7;
+                ctx.fillStyle = k > 0.02
+                    ? 'rgba(238,95,147,' + (0.3 + k * 0.6).toFixed(2) + ')'
+                    : 'rgba(43,26,20,0.2)';
+                ctx.beginPath();
+                ctx.arc(px, py, 1.4 + k * 8, 0, 6.2832);
+                ctx.fill();
+            }
+        }
+    }
+
+    function dotLoop() {
+        mx += (tx - mx) * 0.2;
+        my += (ty - my) * 0.2;
+        strength += ((active ? 1 : 0) - strength) * 0.12;
+        draw();
+        if (active || strength > 0.01) { dotRaf = requestAnimationFrame(dotLoop); }
+        else { dotRaf = 0; strength = 0; draw(); }
+    }
+
+    zone.addEventListener('pointerenter', function (e) {
+        if (e.pointerType === 'touch') return;
+        var r = zone.getBoundingClientRect();
+        mx = tx = e.clientX - r.left;
+        my = ty = e.clientY - r.top;
+        active = true;
+        frame.classList.add('is-active');
+        if (!dotRaf) dotRaf = requestAnimationFrame(dotLoop);
+    });
+
+    zone.addEventListener('pointermove', function (e) {
+        if (e.pointerType === 'touch') return;
+        var r = zone.getBoundingClientRect();
+        tx = e.clientX - r.left;
+        ty = e.clientY - r.top;
+        evt = e;
+        if (!tiltRaf) tiltRaf = requestAnimationFrame(tilt);
+    });
+
+    zone.addEventListener('pointerleave', function () {
+        active = false;
+        evt = null;
+        frame.classList.remove('is-active');
+        frame.style.setProperty('--rx', '0deg');
+        frame.style.setProperty('--ry', '0deg');
+        if (!dotRaf) dotRaf = requestAnimationFrame(dotLoop);
+    });
+
+    window.addEventListener('resize', resize);
+    resize();
 })();

@@ -1,8 +1,7 @@
 <?php
-namespace app\Http\Controllers;
+namespace App\Http\Controllers;
 
-use app\Support\Cart;
-
+use App\Support\Cart;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;

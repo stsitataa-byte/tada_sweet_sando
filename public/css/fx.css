@@ -1,0 +1,208 @@
+/* =========================================================
+   TADA SWEETSANDO - fx.css
+   Dimuat SETELAH app.css, jadi aturan di sini menimpa aturan lama.
+   ========================================================= */
+
+/* ---------- Header: muncul dari atas + pill dengan sapuan warna ---------- */
+.site-header { animation: headerIn .7s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes headerIn { from { transform: translateY(-100%); opacity: 0; } }
+
+.pill {
+    position: relative; isolation: isolate; overflow: hidden;
+    transition: color .3s, transform .25s cubic-bezier(.3, 1.6, .5, 1);
+}
+.pill::before {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: var(--ink);
+    transform: translateY(102%);
+    transition: transform .35s cubic-bezier(.2, .8, .2, 1);
+}
+.pill:hover { color: #fff; transform: translateY(-2px) rotate(-2deg); }
+.pill:hover::before { transform: none; }
+.pill:active { transform: translateY(1px) scale(.96); }
+
+.icon-btn { transition: transform .25s cubic-bezier(.3, 1.6, .5, 1), color .2s; }
+.icon-btn:hover { animation: wiggle .5s; }
+@keyframes wiggle { 20% { transform: rotate(-14deg) scale(1.12); } 50% { transform: rotate(10deg) scale(1.12); } 80% { transform: rotate(-5deg); } }
+
+.brand img, .brand__text { transition: transform .4s cubic-bezier(.3, 1.6, .5, 1); }
+.brand:hover img, .brand:hover .brand__text { transform: scale(1.08) rotate(-2deg); }
+
+/* ---------- Dropdown SHOP: buka dengan animasi, kartu muncul bertahap ---------- */
+.shop-menu {
+    display: block;
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transform: translateY(-12px) scale(.94);
+    transform-origin: 20px -10px;
+    transition: opacity .25s, transform .4s cubic-bezier(.2, 1.3, .4, 1), visibility 0s .4s;
+}
+.shop-menu.is-open {
+    opacity: 1; visibility: visible; pointer-events: auto;
+    transform: none;
+    transition: opacity .25s, transform .4s cubic-bezier(.2, 1.3, .4, 1), visibility 0s;
+}
+.shop-menu__title, .shop-menu__item { opacity: 0; transform: translateY(14px) scale(.96); }
+.shop-menu.is-open .shop-menu__title,
+.shop-menu.is-open .shop-menu__item {
+    opacity: 1; transform: none;
+    transition: opacity .35s, transform .5s cubic-bezier(.2, 1.4, .4, 1);
+    transition-delay: calc(80ms + var(--n, 0) * 70ms);
+}
+.shop-menu.is-open .shop-menu__item:hover {
+    transform: translateY(-3px) rotate(-1.5deg);
+    box-shadow: 3px 3px 0 var(--ink);
+    transition-delay: 0s;
+}
+.shop-menu__item img { transition: transform .35s cubic-bezier(.3, 1.6, .5, 1); }
+.shop-menu__item:hover img { transform: scale(1.18) rotate(6deg); }
+
+/* =========================================================
+   HERO BERGANTI TEMA
+   ========================================================= */
+
+/* ---- THEMES: ubah warna per rasa di sini ---- */
+.hero {
+    --h-bg: #fff3b0;   /* warna latar */
+    --h-text: #f48fb1; /* warna isi judul besar */
+    --b1: #f8a3c0;     /* bentuk besar kiri bawah */
+    --b2: #ffd34d;     /* gelombang bawah */
+    --b3: #8fd16a;     /* lingkaran kanan atas */
+    --card-bg: #fffdf0;
+    --shop-bg: #f8a3c0;
+}
+.hero[data-theme="mango"]      { --h-bg: #fff0a0; --h-text: #f7b500; --b1: #ffc83d; --b2: #6bb04a; --b3: #ff9f45; --shop-bg: #ffc83d; }
+.hero[data-theme="grape"]      { --h-bg: #e7dcfb; --h-text: #9a6ad8; --b1: #a77bdc; --b2: #6bb04a; --b3: #d6efb4; --shop-bg: #c4a8ee; }
+.hero[data-theme="strawberry"] { --h-bg: #ffdce6; --h-text: #ef476f; --b1: #ef476f; --b2: #6bb04a; --b3: #fbb1c6; --shop-bg: #f7a1b8; }
+.hero[data-theme="mix-fruit"]  { --h-bg: #fff3b0; --h-text: #f48fb1; --b1: #f8a3c0; --b2: #ffd34d; --b3: #8fd16a; --shop-bg: #f8a3c0; }
+
+.hero {
+    position: relative; isolation: isolate;
+    display: grid; grid-template-columns: 1.15fr .85fr; align-items: center; gap: 24px;
+    min-height: min(88vh, 700px);
+    padding: 36px 6vw 44px;
+    background: var(--h-bg);
+    border-bottom: var(--line);
+    overflow: hidden;
+    transition: background-color .9s ease;
+}
+
+/* ilustrasi latar */
+.hero__art { position: absolute; inset: 0; z-index: -1; }
+.hero__art svg { width: 100%; height: 100%; display: block; }
+.blob { stroke: var(--ink); stroke-width: 4; transition: fill .9s ease; }
+.blob.b1 { fill: var(--b1); }
+.blob.b2 { fill: var(--b2); }
+.blob.b3 { fill: var(--b3); }
+
+.px { transition: transform .5s cubic-bezier(.2, .8, .2, 1); }
+.px0 { transform: translate(calc(var(--px, 0) * 10px), calc(var(--py, 0) * 8px)); }
+.px1 { transform: translate(calc(var(--px, 0) * -22px), calc(var(--py, 0) * -16px)); }
+.px2 { transform: translate(calc(var(--px, 0) * 30px), calc(var(--py, 0) * 22px)); }
+
+.art-fruit {
+    opacity: 0;
+    transform-box: fill-box; transform-origin: center;
+    transform: scale(.82) translateY(40px) rotate(-6deg);
+    transition: opacity .7s ease, transform .9s cubic-bezier(.2, 1.2, .4, 1);
+}
+.hero[data-theme="mango"]      .art-fruit[data-for="mango"],
+.hero[data-theme="grape"]      .art-fruit[data-for="grape"],
+.hero[data-theme="strawberry"] .art-fruit[data-for="strawberry"],
+.hero[data-theme="mix-fruit"]  .art-fruit[data-for="mix-fruit"] { opacity: 1; transform: none; }
+
+.bob { transform-box: fill-box; transform-origin: center; }
+.bob-a { animation: bobA 7s ease-in-out infinite; }
+.bob-b { animation: bobB 8.5s ease-in-out infinite; }
+.bob-c { animation: bobC 5s ease-in-out infinite; }
+@keyframes bobA { 50% { transform: translateY(-16px) rotate(2deg); } }
+@keyframes bobB { 50% { transform: translateY(14px) rotate(-2.5deg); } }
+@keyframes bobC { 50% { transform: translateY(-10px) rotate(12deg) scale(1.08); } }
+
+/* teks */
+.hero__text { position: relative; z-index: 1; }
+.hero__kicker { margin: 0 0 12px; }
+.hero__title {
+    margin: 0; display: flex; flex-direction: column; align-items: flex-start;
+    font-family: var(--f-display); font-weight: 400; line-height: .88; text-transform: uppercase;
+    font-size: clamp(46px, 7.4vw, 112px);
+    letter-spacing: .005em;
+}
+.hw {
+    display: block;
+    color: var(--h-text);
+    -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill;
+    text-shadow: 5px 6px 0 var(--ink);
+    transition: color .8s ease;
+}
+.hero.is-swapping .hw { animation: wordPop .7s cubic-bezier(.2, 1.5, .4, 1) calc(var(--w) * 90ms) both; }
+@keyframes wordPop { 0% { transform: translateY(26px) scale(.9) rotate(-3deg); opacity: .2; } 100% { transform: none; opacity: 1; } }
+.hero__lead { max-width: 440px; margin: 18px 0 22px; font-family: var(--f-mono); font-size: 14px; font-weight: 700; }
+
+/* kartu lengkung */
+.hero-card {
+    position: relative; justify-self: center;
+    width: min(300px, 78vw); height: 450px;
+    display: flex; flex-direction: column;
+    background: var(--card-bg);
+    border: 3px solid var(--ink);
+    border-radius: 160px 160px 14px 14px;
+    overflow: hidden;
+    box-shadow: 8px 8px 0 var(--ink);
+    animation: cardIn .9s cubic-bezier(.2, 1.2, .4, 1) .15s both, cardBob 6s ease-in-out 1.2s infinite;
+}
+@keyframes cardIn { from { opacity: 0; transform: translateY(60px) rotate(4deg); } }
+@keyframes cardBob { 50% { transform: translateY(-9px) rotate(-.8deg); } }
+
+.hc-arc { position: absolute; top: 12px; left: 0; width: 100%; height: auto; pointer-events: none; z-index: 2; }
+.hc-arc text {
+    font-family: var(--f-display); font-size: 25px; letter-spacing: .06em;
+    fill: var(--h-text); stroke: var(--ink); stroke-width: 3.5px; paint-order: stroke fill;
+    transition: fill .8s;
+}
+
+.hc-stage { position: relative; flex: 1; margin-top: 52px; }
+.hc-slide {
+    position: absolute; inset: 0; display: grid; place-items: center; padding: 10px 22px 6px;
+    opacity: 0; transform: translateY(30px) scale(.85) rotate(-6deg);
+    transition: opacity .5s ease, transform .7s cubic-bezier(.2, 1.3, .4, 1);
+    pointer-events: none;
+}
+.hc-slide.is-active { opacity: 1; transform: none; pointer-events: auto; }
+.hc-img { width: 100%; max-height: 240px; object-fit: contain; filter: drop-shadow(0 12px 10px rgba(43, 26, 20, .22)); }
+.hc-slide .img-placeholder { min-height: 200px; }
+
+.hc-picks { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 3px solid var(--ink); background: #fff; }
+.hc-pick {
+    display: grid; justify-items: center; gap: 2px; padding: 7px 2px 6px;
+    background: transparent; border: 0; border-right: 2px solid var(--ink);
+    font-family: var(--f-mono); font-size: 8.5px; font-weight: 700; line-height: 1.1;
+    text-transform: uppercase; text-align: center;
+    transition: background .25s, transform .25s cubic-bezier(.3, 1.6, .5, 1);
+}
+.hc-pick:last-child { border-right: 0; }
+.hc-pick:hover { background: var(--cream-2); transform: translateY(-3px); }
+.hc-pick .eye--open { display: none; }
+.hc-pick.is-active .eye--open { display: block; animation: blink 4s infinite; transform-origin: center; }
+.hc-pick.is-active .eye--shut { display: none; }
+.hc-pick.is-active { background: var(--cream-2); }
+@keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+
+.hc-shop {
+    display: block; padding: 13px; text-align: center; text-decoration: none;
+    background: var(--shop-bg); color: var(--ink);
+    border-top: 3px solid var(--ink);
+    font-family: var(--f-mono); font-weight: 700; font-size: 13px; letter-spacing: .1em;
+    transition: background .8s, letter-spacing .3s;
+}
+.hc-shop:hover { letter-spacing: .22em; }
+
+/* ---------- Responsive hero ---------- */
+@media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; min-height: 0; padding: 40px 6vw 56px; gap: 36px; }
+    .hero__title { font-size: clamp(48px, 15vw, 96px); }
+    .hero-card { height: 450px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .site-header, .hero-card, .bob, .hc-pick.is-active .eye--open { animation: none !important; }
+}

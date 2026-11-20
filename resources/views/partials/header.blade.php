@@ -24,12 +24,12 @@
 <header class="site-header">
     <div class="site-header__left">
         <div class="shop-wrap">
-            <button type="button" class="pill pill--pink" data-shop-toggle aria-expanded="false" aria-controls="shopMenu">Shop</button>
-            <div class="shop-menu" id="shopMenu" hidden>
+            <button type="button" class="pill pill--pink" data-shop-btn aria-expanded="false" aria-controls="shopPanel">Shop</button>
+            <div class="shop-menu" id="shopPanel">
                 <a class="shop-menu__title" href="{{ route('shop') }}">Fruit Sando <svg width="16" height="16"><use href="#i-arrow"/></svg></a>
                 <div class="shop-menu__grid">
                     @foreach($headerCatalog as $p)
-                        <a class="shop-menu__item" href="{{ route('product', ['slug' => $p['slug']]) }}" style="--card: {{ $p['color'] }}">
+                        <a class="shop-menu__item" href="{{ route('product', ['slug' => $p['slug']]) }}" style="--card: {{ $p['color'] }}; --n: {{ $loop->index }}">
                             <span>{{ $p['name'] }}</span>
                             @if($p['image_url'])<img src="{{ $p['image_url'] }}" alt="">@endif
                         </a>
