@@ -32,9 +32,20 @@ return new class extends Migration
                 $table->boolean('is_active')->default(true);
                 $table->timestamps();
             });
-        } elseif (! Schema::hasColumn('products', 'sold_quantity')) {
+        } else {
             Schema::table('products', function (Blueprint $table) {
-                $table->unsignedInteger('sold_quantity')->default(0);
+                if (! Schema::hasColumn('products', 'stock')) {
+                    $table->unsignedInteger('stock')->default(0);
+                }
+                if (! Schema::hasColumn('products', 'sold_quantity')) {
+                    $table->unsignedInteger('sold_quantity')->default(0);
+                }
+                if (! Schema::hasColumn('products', 'image_url')) {
+                    $table->string('image_url')->nullable();
+                }
+                if (! Schema::hasColumn('products', 'is_active')) {
+                    $table->boolean('is_active')->default(true);
+                }
             });
         }
 

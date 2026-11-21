@@ -3,6 +3,10 @@
 @section('title', 'TADA SWEETSANDO | Fresh Fruit Sando')
 
 @section('content')
+<span class="sr-only">JAPANESE-INSPIRED FRUIT SANDO</span>
+@foreach($storeProducts as $storeProduct)
+    <span class="sr-only">{{ $storeProduct->name }}</span>
+@endforeach
 {{-- ============ HERO (berganti tema per varian) ============ --}}
 @include('partials.hero', ['catalog' => $catalog])
 

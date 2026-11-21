@@ -34,7 +34,7 @@
             catalog: @json(\App\Support\Cart::catalog()),
             routes: {
                 add: @json(route('cart.add')),
-                update: @json(route('cart.update')),
+                update: @json(route('cart.update.key')),
                 remove: @json(route('cart.remove')),
                 checkout: @json(route('checkout')),
                 shop: @json(route('shop'))

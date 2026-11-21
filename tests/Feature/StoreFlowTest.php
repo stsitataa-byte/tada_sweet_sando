@@ -111,6 +111,7 @@ class StoreFlowTest extends TestCase
 
         $this->actingAs($customer)
             ->post(route('cart.checkout'), [
+                'customer_name' => $customer->name,
                 'customer_phone' => '08123456789',
                 'payment_method' => 'COD',
             ])
@@ -131,6 +132,36 @@ class StoreFlowTest extends TestCase
         ]);
         $this->assertSame([], session('cart', []));
         $this->get(route('orders.mine'))->assertOk()->assertSee('Pesanan #1');
+    }
+
+    public function test_guest_can_checkout_without_login(): void
+    {
+        $product = Product::create([
+            'name' => 'Guest Sando',
+            'slug' => 'guest-sando',
+            'description' => 'Pesanan tanpa akun.',
+            'price' => 25000,
+            'stock' => 2,
+        ]);
+
+        $this->post(route('cart.store', $product), ['quantity' => 1])
+            ->assertRedirect(route('home').'#cart');
+
+        $this->post(route('cart.checkout'), [
+            'customer_name' => 'Pelanggan Tamu',
+            'customer_phone' => '08987654321',
+            'customer_address' => 'Jl. Contoh No. 10',
+            'payment_method' => 'COD',
+        ])->assertRedirect(route('home'));
+
+        $this->assertDatabaseHas('orders', [
+            'user_id' => null,
+            'customer_name' => 'Pelanggan Tamu',
+            'customer_phone' => '08987654321',
+            'total' => 25000,
+        ]);
+        $this->assertDatabaseHas('products', ['id' => $product->id, 'stock' => 1]);
+        $this->assertGuest();
     }
 
     public function test_checkout_rejects_quantity_above_available_stock(): void

@@ -67,16 +67,18 @@ return [
             ['title' => 'Real fruit', 'text' => 'Buah asli di setiap varian. juicy dan legitnya mangga, anggur yang watery tampa biji, dan strawberry yang manis asam yang dapat membuatmu selalu menikmatinya.'],
             ['title' => 'Soft cream', 'text' => 'Whipping cream yang lembut. dengan tambahan vanila yang khas membuat rasa soft balance.'],
             ['title' => 'Made daily', 'text' => 'Fruit sando dibuat setiap hari. dapat di pastikan fresh dan cocok untuk anak yang suka dessert.'],
+        ],
         'images' => [
             'assets/logo-tada-sweetsando.png',
             ],
     ],
-
     'about' => [
         'title' => 'ABOUT TADA SWEETSANDO',
         'text'  => [
-            'Dibuat dengan kreatif dan ketelitian, serta keinginan untuk membuat dessert yang nikmat dansehat'],
-            'Desert yang kami kenalkan bukan hanya tentang cream vanila yang khas, namun kami menghadirkan buah lembut yg menyajikan dessert manis alami.'],
+            'Dibuat dengan kreatif dan ketelitian, serta keinginan untuk membuat dessert yang nikmat dan sehat.',
+            'Dessert yang kami kenalkan bukan hanya tentang cream vanila yang khas, namun kami menghadirkan buah lembut yang menyajikan dessert manis alami.',
+        ],
+    ],
 
     // Kosong = tampil kartu placeholder. Isi hanya dengan ulasan pelanggan asli. Contoh item:
     // ['name' => 'Nama', 'text' => 'Isi ulasan', 'photo' => 'assets/review-1.png'],
@@ -212,71 +214,5 @@ return [
             'note'        => null,
         ],
     ],
-
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #101010;
-    overflow: hidden;
-}
-
-.container {
-    width: min(85vw, 1000px);
-    aspect-ratio: 16 / 9;
-    perspective: 1200px;
-}
-
-.photo {
-    width: 100%;
-    height: 100%;
-    border-radius: 15px;
-    overflow: hidden;
-    transform-style: preserve-3d;
-    transition: transform 0.15s ease-out;
-    box-shadow: 0 25px 70px rgba(0,0,0,.6);
-}
-
-.photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transform: scale(1.08);
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="container">
-    <div class="photo" id="photo">
-        <img src="foto.jpg" alt="My Photo">
-    </div>
-</div>
-
-<script>
-const photo = document.getElementById("photo");
-
-document.addEventListener("mousemove", (e) => {
-    const x = (window.innerWidth / 2 - e.clientX) / 30;
-    const y = (window.innerHeight / 2 - e.clientY) / 30;
-
-    photo.style.transform =
-        `rotateY(${-x}deg) rotateX(${y}deg)`;
-});
-
-document.addEventListener("mouseleave", () => {
-    photo.style.transform = "rotateY(0deg) rotateX(0deg)";
-});
-
 ];
+

@@ -27,17 +27,13 @@
             <aside class="panel">
                 <h2>Ringkasan pesanan</h2>
                 <div class="row" style="justify-content:space-between;margin:20px 0"><span class="muted">Total</span><strong style="font-size:22px">Rp{{ number_format((float) $total, 0, ',', '.') }}</strong></div>
-                @auth
-                    <form method="POST" action="{{ route('cart.checkout') }}">@csrf
-                        <div class="field"><label for="customer_phone">Nomor telepon</label><input class="input" id="customer_phone" name="customer_phone" type="tel" value="{{ old('customer_phone') }}" maxlength="30" autocomplete="tel" required></div>
-                        <div class="field"><label for="customer_address">Alamat (opsional)</label><textarea id="customer_address" name="customer_address" maxlength="2000" autocomplete="street-address">{{ old('customer_address') }}</textarea></div>
-                        <div class="field"><label for="payment_method">Metode pembayaran</label><select id="payment_method" name="payment_method" required><option value="COD">Bayar di tempat (COD)</option><option value="QRIS">QRIS</option></select></div>
-                        <button class="btn" style="width:100%" type="submit">Buat pesanan</button>
-                    </form>
-                @else
-                    <p class="muted small">Masuk atau daftar untuk menyelesaikan pesanan.</p>
-                    <a class="btn" style="width:100%" href="{{ route('login', ['redirect' => 'cart']) }}">Masuk untuk checkout</a>
-                @endauth
+                <form method="POST" action="{{ route('cart.checkout') }}">@csrf
+                    <div class="field"><label for="customer_name">Nama penerima</label><input class="input" id="customer_name" name="customer_name" value="{{ old('customer_name', auth()->user()->name ?? '') }}" maxlength="120" autocomplete="name" required></div>
+                    <div class="field"><label for="customer_phone">Nomor telepon</label><input class="input" id="customer_phone" name="customer_phone" type="tel" value="{{ old('customer_phone') }}" maxlength="30" autocomplete="tel" required></div>
+                    <div class="field"><label for="customer_address">Alamat (opsional)</label><textarea id="customer_address" name="customer_address" maxlength="2000" autocomplete="street-address">{{ old('customer_address') }}</textarea></div>
+                    <div class="field"><label for="payment_method">Metode pembayaran</label><select id="payment_method" name="payment_method" required><option value="COD">Bayar di tempat (COD)</option><option value="QRIS">QRIS</option></select></div>
+                    <button class="btn" style="width:100%" type="submit">Buat pesanan</button>
+                </form>
             </aside>
         </div>
     @endif

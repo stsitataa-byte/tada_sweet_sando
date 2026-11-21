@@ -4,7 +4,7 @@
 
 @section('content')
     <section class="narrow auth-card">
-        <div class="eyebrow">Satu langkah menuju sando favorit</div><h1>Buat akun Tada</h1><p class="muted">Daftar untuk checkout dan memantau pesananmu.</p>
+        <div class="eyebrow">Satu langkah menuju sando favorit</div><h1>Buat akun Tada</h1><p class="muted">Daftar untuk memantau pesananmu. Belum ingin daftar? Pesanan tetap bisa dibuat.</p>
         <form method="POST" action="{{ route('register') }}">@csrf
             <div class="field"><label for="name">Nama</label><input class="input" id="name" name="name" value="{{ old('name') }}" autocomplete="name" maxlength="120" required autofocus></div>
             <div class="field"><label for="email">Email</label><input class="input" id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" required></div>

@@ -58,7 +58,7 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $data = $request->validateWithBag('register', [
+        $rules = [
             'first_name' => ['required', 'string', 'max:60'],
             'last_name' => ['nullable', 'string', 'max:60'],
             'register_email' => [
@@ -73,7 +73,17 @@ class AuthController extends Controller
                 'min:8',
                 'max:100'
             ],
-        ], [
+        ];
+
+        if ($request->has('name') || $request->has('email')) {
+            $rules = [
+                'name' => ['required', 'string', 'max:120'],
+                'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+                'password' => ['required', 'string', 'min:8', 'max:100', 'confirmed'],
+            ];
+        }
+
+        $data = $request->validateWithBag('register', $rules, [
             'first_name.required' => 'Nama depan wajib diisi.',
             'register_email.required' => 'Email wajib diisi.',
             'register_email.email' => 'Masukkan alamat email yang valid.',
@@ -84,15 +94,17 @@ class AuthController extends Controller
 
         $user = new User();
 
-        $user->name = trim(
-            $data['first_name'] . ' ' . ($data['last_name'] ?? '')
-        );
-
-        $user->email = $data['register_email'];
-
-        $user->password = Hash::make(
-            $data['register_password']
-        );
+        if (isset($data['name'])) {
+            $user->name = $data['name'];
+            $user->email = $data['email'];
+            $user->password = Hash::make($data['password']);
+        } else {
+            $user->name = trim(
+                $data['first_name'] . ' ' . ($data['last_name'] ?? '')
+            );
+            $user->email = $data['register_email'];
+            $user->password = Hash::make($data['register_password']);
+        }
 
         $user->save();
 

@@ -2,18 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Support\Cart;
 
 class PageController extends Controller
 {
     public function home()
     {
-        return view('home', ['catalog' => Cart::catalog()]);
+        return view('home', [
+            'catalog' => Cart::catalog(),
+            'storeProducts' => Product::query()->where('is_active', true)->orderBy('id')->get(),
+        ]);
     }
 
     public function shop()
     {
-        return view('shop', ['catalog' => Cart::catalog()]);
+        return view('shop', [
+            'catalog' => Cart::catalog(),
+            'storeProducts' => Product::query()->where('is_active', true)->orderBy('id')->get(),
+        ]);
     }
 
     public function about()

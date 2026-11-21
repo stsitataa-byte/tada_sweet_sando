@@ -33,8 +33,7 @@
                     <span class="muted small">{{ auth()->user()->name }}</span>
                     <form method="POST" action="{{ route('logout') }}">@csrf<button class="btn btn-light btn-sm" type="submit">Keluar</button></form>
                 @else
-                    <a href="{{ route('login') }}">Masuk</a>
-                    <a class="btn btn-sm" href="{{ route('register') }}">Daftar</a>
+                    <a href="{{ route('login') }}">Masuk (opsional)</a>
                 @endauth
             </div>
         </nav>
